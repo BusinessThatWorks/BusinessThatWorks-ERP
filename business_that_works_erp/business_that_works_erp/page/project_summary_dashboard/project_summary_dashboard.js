@@ -25,6 +25,8 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 .btw-card:nth-child(1) { background: linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; }
 .btw-card:nth-child(2) { background: linear-gradient(135deg,#0891b2,#0e7490); color:#fff; }
 .btw-card:nth-child(3) { background: linear-gradient(135deg,#059669,#047857); color:#fff; }
+.btw-cards-totals { margin-top:12px; }
+.btw-cards-totals .btw-card { background: linear-gradient(135deg,#1e1b4b,#312e81); color:#fff; }
 .btw-card-label { font-size:12px; font-weight:600; opacity:.8; margin-bottom:8px; letter-spacing:.3px; }
 .btw-card-value { font-size:32px; font-weight:800; line-height:1; }
 .btw-card-sub { font-size:12px; opacity:.75; margin-top:8px; }
@@ -60,13 +62,14 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 .btw-project-total { font-size:12px; color:#aaa; margin-top:2px; }
 
 /* ── progress bar ── */
-.btw-progress-wrap { width:90px; flex-shrink:0; }
-.btw-progress-bg { background:#f0f0f0; border-radius:6px; height:7px; }
-.btw-progress-bar { height:7px; border-radius:6px; transition: width .5s ease; }
+.btw-progress-wrap { width:120px; flex-shrink:0; }
+.btw-progress-label { font-size:10px; color:#aaa; font-weight:600; letter-spacing:.3px; margin-bottom:2px; }
+.btw-progress-bg { background:#f0f0f0; border-radius:6px; height:6px; }
+.btw-progress-bar { height:6px; border-radius:6px; transition: width .5s ease; }
 .btw-progress-bar.full { background: linear-gradient(90deg,#f59e0b,#ef4444); }
 .btw-progress-bar.mid  { background: linear-gradient(90deg,#4f46e5,#7c3aed); }
 .btw-progress-bar.low  { background: #d1d5db; }
-.btw-progress-pct { font-size:11px; font-weight:600; color:#7c3aed; text-align:right; margin-top:4px; }
+.btw-progress-pct { font-size:10px; font-weight:600; color:#7c3aed; text-align:right; margin-top:2px; }
 
 /* ── badges ── */
 .btw-badge { font-size:11px; font-weight:700; padding:4px 12px; border-radius:100px; white-space:nowrap; flex-shrink:0; letter-spacing:.2px; }
@@ -92,7 +95,7 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 }
 .btw-back-btn:hover { background:#ddd6fe; }
 
-.btw-detail-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+.btw-detail-cards { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:24px; }
 .btw-detail-card {
   background:#fff; border-radius:12px; padding:18px 16px;
   border-left:4px solid #7c3aed;
@@ -102,6 +105,7 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 .btw-detail-card:nth-child(2) { border-color:#059669; }
 .btw-detail-card:nth-child(3) { border-color:#ef4444; }
 .btw-detail-card:nth-child(4) { border-color:#0891b2; }
+.btw-detail-card:nth-child(5) { border-color:#d97706; }
 .btw-detail-card-label { font-size:12px; color:#888; margin-bottom:8px; font-weight:600; letter-spacing:.3px; }
 .btw-detail-card-value { font-size:26px; font-weight:800; color:#1a1a2e; line-height:1; }
 .btw-detail-card-value.green { color:#059669; }
@@ -143,17 +147,17 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 		var abs = Math.abs(n);
 		var sign = n < 0 ? "-" : "";
 		if (abs >= 10000000) return sign + "₹" + (abs / 10000000).toFixed(2) + " Cr";
-		if (abs >= 100000)   return sign + "₹" + (abs / 100000).toFixed(1) + "L";
-		if (abs >= 1000)     return sign + "₹" + (abs / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+		if (abs >= 100000) return sign + "₹" + (abs / 100000).toFixed(1) + "L";
+		if (abs >= 1000) return sign + "₹" + (abs / 1000).toFixed(1).replace(/\.0$/, "") + "K";
 		return sign + "₹" + Math.round(abs);
 	}
 
 	function badge(status) {
 		var map = {
-			"Open":        ["Live",        "live"],
+			"Open": ["Live", "live"],
 			"In Progress": ["In progress", "progress"],
-			"Completed":   ["Done",        "done"],
-			"Cancelled":   ["Closed",      "closed"],
+			"Completed": ["Done", "done"],
+			"Cancelled": ["Closed", "closed"],
 		};
 		var b = map[status] || [status || "—", "default"];
 		return '<span class="btw-badge btw-badge-' + b[1] + '">' + b[0] + '</span>';
@@ -161,9 +165,11 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 
 	function project_row(p) {
 		var collected = p.collected || 0;
-		var total     = p.total_value || 0;
-		var pct       = total > 0 ? Math.min(100, Math.round(collected / total * 100)) : 0;
-		var bar_cls   = pct >= 90 ? "full" : pct >= 50 ? "mid" : "low";
+		var contract_value = p.contract_value || 0;
+		var fin_pct = contract_value > 0 ? Math.min(100, Math.floor(collected / contract_value * 100)) : 0;
+		var fin_cls = fin_pct >= 90 ? "full" : fin_pct >= 50 ? "mid" : "low";
+		var comp_pct = Math.min(100, Math.floor(p.percent_complete || 0));
+		var comp_cls = comp_pct >= 90 ? "full" : comp_pct >= 50 ? "mid" : "low";
 
 		// Extra tags: AMC + Cloud
 		var tags = "";
@@ -183,11 +189,15 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 			'  </div>' +
 			'  <div class="btw-project-money">' +
 			'    <div class="btw-project-collected">' + fmt(collected) + ' collected</div>' +
-			'    <div class="btw-project-total">of ' + fmt(total) + ' total</div>' +
+			'    <div class="btw-project-total">of ' + fmt(contract_value) + ' total</div>' +
 			'  </div>' +
 			'  <div class="btw-progress-wrap">' +
-			'    <div class="btw-progress-bg"><div class="btw-progress-bar ' + bar_cls + '" style="width:' + pct + '%"></div></div>' +
-			'    <div class="btw-progress-pct">' + pct + '%</div>' +
+			'    <div class="btw-progress-label">Financial</div>' +
+			'    <div class="btw-progress-bg"><div class="btw-progress-bar ' + fin_cls + '" style="width:' + fin_pct + '%"></div></div>' +
+			'    <div class="btw-progress-pct">' + fin_pct + '%</div>' +
+			'    <div class="btw-progress-label" style="margin-top:4px">Completion</div>' +
+			'    <div class="btw-progress-bg"><div class="btw-progress-bar ' + comp_cls + '" style="width:' + comp_pct + '%"></div></div>' +
+			'    <div class="btw-progress-pct">' + comp_pct + '%</div>' +
 			'  </div>' +
 			badge(p.status) +
 			'</div>'
@@ -197,7 +207,7 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 	// ── render portfolio ──────────────────────────────────────────
 	function render_portfolio() {
 		var uname = (frappe.session.user_fullname || frappe.session.user || "").split(" ")[0] || "there";
-		var date  = frappe.datetime.str_to_user(frappe.datetime.nowdate());
+		var date = frappe.datetime.str_to_user(frappe.datetime.nowdate());
 
 		// Show skeleton while loading
 		page.main.html(
@@ -213,12 +223,17 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 			frappe.call({ method: "business_that_works_erp.api.get_summary_stats" }),
 			frappe.call({ method: "business_that_works_erp.api.get_portfolio_overview" })
 		).then(function (s_res, p_res) {
-			var s    = s_res[0].message || {};
+			var s = s_res[0].message || {};
 			var proposals = p_res[0].message || [];
 
 			var outstanding_sub = s.total_outstanding > 0
 				? fmt(s.total_outstanding) + " still to collect"
 				: "All collected";
+
+			var total_contract = proposals.reduce(function (sum, p) { return sum + (p.contract_value || 0); }, 0);
+			var total_collected = proposals.reduce(function (sum, p) { return sum + (p.collected || 0); }, 0);
+			var total_outstanding = total_contract - total_collected;
+
 			var rows = proposals.length
 				? proposals.map(project_row).join("")
 				: '<div style="color:#bbb;text-align:center;padding:32px">No proposals found.</div>';
@@ -235,14 +250,32 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 				'      <div class="btw-card-sub' + (s.total_outstanding > 0 ? " warn" : "") + '">' + outstanding_sub + '</div>' +
 				'    </div>' +
 				'    <div class="btw-card">' +
-				'      <div class="btw-card-label">AMC clients</div>' +
+				'      <div class="btw-card-label">AMC Clients</div>' +
 				'      <div class="btw-card-value">' + (s.amc_clients || 0) + '</div>' +
 				'      <div class="btw-card-sub">Live AMC contracts</div>' +
 				'    </div>' +
 				'    <div class="btw-card">' +
-				'      <div class="btw-card-label">Cloud / month</div>' +
-				'      <div class="btw-card-value" style="font-size:24px">' + fmt(s.total_monthly_cloud || 0) + '</div>' +
+				'      <div class="btw-card-label">Cloud Charges</div>' +
+				'      <div class="btw-card-value" style="font-size:24px">' + fmt(s.total_cloud || 0) + '</div>' +
 				'      <div class="btw-card-sub">Across ' + (s.cloud_projects || 0) + ' client(s)</div>' +
+				'    </div>' +
+				'  </div>' +
+
+				'  <div class="btw-cards btw-cards-totals">' +
+				'    <div class="btw-card btw-card-dark">' +
+				'      <div class="btw-card-label">Total Contract Value</div>' +
+				'      <div class="btw-card-value" style="font-size:24px">' + fmt(total_contract) + '</div>' +
+				'      <div class="btw-card-sub">Across all projects</div>' +
+				'    </div>' +
+				'    <div class="btw-card btw-card-dark">' +
+				'      <div class="btw-card-label">Total Collected</div>' +
+				'      <div class="btw-card-value" style="font-size:24px;color:#6ee7b7">' + fmt(total_collected) + '</div>' +
+				'      <div class="btw-card-sub">All paid invoices</div>' +
+				'    </div>' +
+				'    <div class="btw-card btw-card-dark">' +
+				'      <div class="btw-card-label">Total Outstanding</div>' +
+				'      <div class="btw-card-value" style="font-size:24px;color:' + (total_outstanding > 0 ? "#fca5a5" : "#6ee7b7") + '">' + fmt(total_outstanding) + '</div>' +
+				'      <div class="btw-card-sub">Pending collection</div>' +
 				'    </div>' +
 				'  </div>' +
 
@@ -331,7 +364,8 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 			'  <div class="btw-detail-card"><div class="btw-detail-card-label">Contract value</div><div class="btw-detail-card-value">' + fmt(contract_value) + '</div><div class="btw-detail-card-sub">One-time implementation</div></div>' +
 			'  <div class="btw-detail-card"><div class="btw-detail-card-label">Collected</div><div class="btw-detail-card-value green">' + fmt(d.collected) + '</div><div class="btw-detail-card-sub">All paid invoices</div></div>' +
 			'  <div class="btw-detail-card"><div class="btw-detail-card-label">Outstanding</div><div class="btw-detail-card-value ' + (outstanding > 0 ? "red" : "") + '">' + fmt(outstanding) + '</div><div class="btw-detail-card-sub">Pending collection</div></div>' +
-			'  <div class="btw-detail-card"><div class="btw-detail-card-label">Cloud / month</div><div class="btw-detail-card-value">' + fmt(d.monthly_cloud) + '</div><div class="btw-detail-card-sub">AMC: ' + fmt(d.amc_amount) + '/mo · ' + (d.remaining_amc_hr || 0).toFixed(0) + ' hrs left</div></div>' +
+			'  <div class="btw-detail-card"><div class="btw-detail-card-label">Cloud Charges</div><div class="btw-detail-card-value">' + fmt(cloud_total) + '</div><div class="btw-detail-card-sub">Total across all periods</div></div>' +
+			'  <div class="btw-detail-card"><div class="btw-detail-card-label">AMC Charges</div><div class="btw-detail-card-value">' + fmt(amc_total) + '</div><div class="btw-detail-card-sub">' + (d.remaining_amc_hr || 0).toFixed(0) + ' hrs left</div></div>' +
 			'</div>' +
 
 			'<div class="btw-two-col">' +

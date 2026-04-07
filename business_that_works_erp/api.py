@@ -41,23 +41,23 @@ def get_summary_stats():
 		if amc_rows:
 			amc_count += 1
 
-		# Cloud: count proposals with cloud rows and sum monthly
+		# Cloud: count proposals with cloud rows and sum total charges
 		cloud_rows = frappe.get_all(
 			"Cloud Charges",
 			filters={"parent": p.name},
-			fields=["cloud_charges__month"],
+			fields=["cloud_charges"],
 		)
 		if cloud_rows:
 			cloud_count += 1
 			for c in cloud_rows:
-				total_monthly_cloud += float(c.cloud_charges__month or 0)
+				total_monthly_cloud += float(c.cloud_charges or 0)
 
 	return {
 		"active_projects": active_count,
 		"total_projects": len(proposals),
 		"amc_clients": amc_count,
 		"cloud_projects": cloud_count,
-		"total_monthly_cloud": total_monthly_cloud,
+		"total_cloud": total_monthly_cloud,
 		"total_outstanding": total_outstanding,
 	}
 
@@ -74,8 +74,12 @@ def get_portfolio_overview():
 	result = []
 	for p in proposals:
 		project_status = None
+		percent_complete = 0.0
 		if p.project_name:
-			project_status = frappe.db.get_value("Project", p.project_name, "status")
+			proj = frappe.db.get_value("Project", p.project_name, ["status", "percent_complete"], as_dict=True)
+			if proj:
+				project_status = proj.status
+				percent_complete = float(proj.percent_complete or 0)
 
 		collected = 0.0
 		outstanding = 0.0
@@ -111,19 +115,38 @@ def get_portfolio_overview():
 		)
 		amc = amc_rows[0] if amc_rows else {}
 
-		# Cloud: sum monthly charges
+		# Cloud: sum monthly charges and total
 		cloud_rows = frappe.get_all(
 			"Cloud Charges",
 			filters={"parent": p.name},
-			fields=["cloud_charges__month", "payment_status"],
+			fields=["cloud_charges__month", "cloud_charges", "payment_status"],
 		)
 		monthly_cloud = sum(float(c.cloud_charges__month or 0) for c in cloud_rows)
+		cloud_total = sum(float(c.cloud_charges or 0) for c in cloud_rows)
+
+		# Pricing: sum of values
+		pricing_rows = frappe.get_all(
+			"Pricing",
+			filters={"parent": p.name},
+			fields=["value"],
+		)
+		pricing_total = sum(float(pr.value or 0) for pr in pricing_rows)
+
+		# AMC total across all rows
+		all_amc_rows = frappe.get_all(
+			"AMC Charges",
+			filters={"parent": p.name},
+			fields=["amc_amount"],
+		)
+		amc_total = sum(float(a.amc_amount or 0) for a in all_amc_rows)
+		contract_value = pricing_total + amc_total + cloud_total
 
 		result.append({
 			"name": p.name,
 			"project_name": p.project_name or "",
 			"customer": p.customer or p.project_name or p.name,
 			"total_value": float(p.total_value or 0),
+			"contract_value": contract_value,
 			"collected": collected,
 			"outstanding": outstanding,
 			"monthly_cloud": monthly_cloud,
@@ -132,6 +155,7 @@ def get_portfolio_overview():
 			"amc_duration_hr": float(amc.get("amc_duration_in_hr") or 0),
 			"remaining_amc_hr": float(amc.get("remaining_amc_in_hr") or 0),
 			"status": project_status or "Unknown",
+			"percent_complete": percent_complete,
 		})
 
 	return result
