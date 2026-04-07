@@ -15,19 +15,19 @@
   "scope_of_work_tab",
   "scope_of_work_section",
   "table_mvgd",
-  "cloud_charges",
-  "amc_details_section",
-  "start",
-  "column_break_hwfj",
-  "total_amc_hours_promised",
   "terms",
   "term",
   "estimated_timeline_tab",
   "table_aoew",
   "total_duration",
   "pricing_tab",
+  "project_cost_section",
   "table_qjcd",
-  "total_value"
+  "total_value",
+  "cloud_charges_section",
+  "table_hqxe",
+  "amc_tracker_section",
+  "amc_tracker"
  ],
  "fields": [
   {
@@ -124,35 +124,37 @@
    "label": "Terms & Condition"
   },
   {
+   "fieldname": "table_hqxe",
+   "fieldtype": "Table",
+   "options": "Cloud Charges"
+  },
+  {
+   "fieldname": "amc_tracker",
+   "fieldtype": "Table",
+   "options": "AMC Charges"
+  },
+  {
    "collapsible": 1,
-   "fieldname": "amc_details_section",
+   "fieldname": "cloud_charges_section",
    "fieldtype": "Section Break",
-   "label": "AMC Details"
+   "label": "Cloud Charges"
   },
   {
-   "fieldname": "start",
-   "fieldtype": "Date",
-   "label": "Start Date"
+   "collapsible": 1,
+   "fieldname": "amc_tracker_section",
+   "fieldtype": "Section Break",
+   "label": "AMC Tracker"
   },
   {
-   "fieldname": "column_break_hwfj",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "total_amc_hours_promised",
-   "fieldtype": "Duration",
-   "label": "Total AMC hours promised"
-  },
-  {
-   "fieldname": "cloud_charges",
-   "fieldtype": "Currency",
-   "label": "Cloud Charges/month"
+   "fieldname": "project_cost_section",
+   "fieldtype": "Section Break",
+   "label": "Project Cost"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-06 16:51:30.138503",
+ "modified": "2026-04-07 12:17:32.985460",
  "modified_by": "Administrator",
  "module": "Business That Works Erp",
  "name": "Proposal",
@@ -175,5 +177,8 @@
  "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1,
+ "track_seen": 1,
+ "track_views": 1
 }

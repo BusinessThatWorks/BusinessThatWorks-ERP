@@ -1,0 +1,78 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-07 11:56:57.798492",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "start_date",
+  "end_date",
+  "amc_status",
+  "amc_amount",
+  "column_break_bsaw",
+  "amc_duration_in_hr",
+  "remaining_amc_in_hr"
+ ],
+ "fields": [
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "amc_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "AMC Status",
+   "options": "\nLive\nExpired"
+  },
+  {
+   "fieldname": "column_break_bsaw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amc_duration_in_hr",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "AMC Duration (In Hr)",
+   "precision": "2"
+  },
+  {
+   "fieldname": "remaining_amc_in_hr",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Remaining AMC (In Hr)",
+   "precision": "2"
+  },
+  {
+   "fieldname": "amc_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "AMC Amount",
+   "precision": "2"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "End Date"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-07 14:36:12.663115",
+ "modified_by": "Administrator",
+ "module": "Business That Works Erp",
+ "name": "AMC Charges",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
