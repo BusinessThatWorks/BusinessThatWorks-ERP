@@ -122,7 +122,12 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
   font-size:11px; font-weight:700; letter-spacing:1px;
   text-transform:uppercase; color:#7c3aed; margin-bottom:14px;
 }
-.btw-table { width:100%; border-collapse:collapse; font-size:13px; }
+.btw-table { width:100%; border-collapse:collapse; font-size:13px; table-layout:fixed; }
+.btw-table-scroll { max-height:230px; overflow-y:auto; }
+.btw-table-scroll::-webkit-scrollbar { width:4px; }
+.btw-table-scroll::-webkit-scrollbar-track { background:#f1f1f1; border-radius:4px; }
+.btw-table-scroll::-webkit-scrollbar-thumb { background:#d1d5db; border-radius:4px; }
+.btw-table-scroll::-webkit-scrollbar-thumb:hover { background:#9ca3af; }
 .btw-table th {
   text-align:left; font-size:11px; font-weight:700;
   color:#9ca3af; padding:8px 10px;
@@ -370,16 +375,20 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 
 			'<div class="btw-two-col">' +
 			'  <div class="btw-table-wrap"><div class="btw-table-title">Invoice Tracker</div>' +
-			'    <table class="btw-table"><thead><tr><th>Invoice</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead><tbody>' + inv_rows + '</tbody></table></div>' +
+			'    <table class="btw-table"><colgroup><col style="width:35%"><col style="width:25%"><col style="width:20%"><col style="width:20%"></colgroup><thead><tr><th>Invoice</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead></table>' +
+			'    <div class="btw-table-scroll"><table class="btw-table"><colgroup><col style="width:35%"><col style="width:25%"><col style="width:20%"><col style="width:20%"></colgroup><tbody>' + inv_rows + '</tbody></table></div></div>' +
 			'  <div class="btw-table-wrap"><div class="btw-table-title">Payment Schedule</div>' +
-			'    <table class="btw-table"><thead><tr><th>Milestone</th><th>%</th><th>Amount</th><th>Status</th></tr></thead><tbody>' + sched_rows + '</tbody></table></div>' +
+			'    <table class="btw-table"><colgroup><col style="width:50%"><col style="width:10%"><col style="width:20%"><col style="width:20%"></colgroup><thead><tr><th>Milestone</th><th>%</th><th>Amount</th><th>Status</th></tr></thead></table>' +
+			'    <div class="btw-table-scroll"><table class="btw-table"><colgroup><col style="width:50%"><col style="width:10%"><col style="width:20%"><col style="width:20%"></colgroup><tbody>' + sched_rows + '</tbody></table></div></div>' +
 			'</div>' +
 
 			'<div class="btw-two-col" style="margin-top:16px">' +
 			'  <div class="btw-table-wrap"><div class="btw-table-title">Cloud Charges</div>' +
-			'    <table class="btw-table"><thead><tr><th>Period</th><th>Monthly</th><th>Total</th><th>Status</th></tr></thead><tbody>' + cloud_rows + '</tbody></table></div>' +
+			'    <table class="btw-table"><colgroup><col style="width:40%"><col style="width:20%"><col style="width:20%"><col style="width:20%"></colgroup><thead><tr><th>Period</th><th>Monthly</th><th>Total</th><th>Status</th></tr></thead></table>' +
+			'    <div class="btw-table-scroll"><table class="btw-table"><colgroup><col style="width:40%"><col style="width:20%"><col style="width:20%"><col style="width:20%"></colgroup><tbody>' + cloud_rows + '</tbody></table></div></div>' +
 			'  <div class="btw-table-wrap"><div class="btw-table-title">AMC Tracker</div>' +
-			'    <table class="btw-table"><thead><tr><th>Period</th><th>Amount</th><th>Hours used</th><th>Status</th></tr></thead><tbody>' + amc_rows + '</tbody></table></div>' +
+			'    <table class="btw-table"><colgroup><col style="width:35%"><col style="width:20%"><col style="width:25%"><col style="width:20%"></colgroup><thead><tr><th>Period</th><th>Amount</th><th>Hours used</th><th>Status</th></tr></thead></table>' +
+			'    <div class="btw-table-scroll"><table class="btw-table"><colgroup><col style="width:35%"><col style="width:20%"><col style="width:25%"><col style="width:20%"></colgroup><tbody>' + amc_rows + '</tbody></table></div></div>' +
 			'</div>' +
 			'</div>'
 		);
