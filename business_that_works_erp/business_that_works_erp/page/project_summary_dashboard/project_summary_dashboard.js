@@ -210,14 +210,22 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 	}
 
 	// ── render portfolio ──────────────────────────────────────────
+	function get_greeting() {
+		var hour = new Date().getHours();
+		if (hour >= 4 && hour < 12) return "Good Morning";
+		if (hour >= 12 && hour < 17) return "Good Afternoon";
+		return "Good Evening";
+	}
+
 	function render_portfolio() {
 		var uname = (frappe.session.user_fullname || frappe.session.user || "").split(" ")[0] || "there";
 		var date = frappe.datetime.str_to_user(frappe.datetime.nowdate());
+		var greeting = get_greeting();
 
 		// Show skeleton while loading
 		page.main.html(
 			'<div class="btw">' +
-			'  <div class="btw-greeting">Good morning, ' + uname + '</div>' +
+			'  <div class="btw-greeting">' + greeting + ', ' + uname + '</div>' +
 			'  <div class="btw-date">' + date + ' · BTW Operations</div>' +
 			'  <div style="color:#bbb;padding:40px 0;text-align:center;">Loading…</div>' +
 			'</div>'
@@ -245,7 +253,7 @@ frappe.pages["project-summary-dashboard"].on_page_load = function (wrapper) {
 
 			page.main.html(
 				'<div class="btw">' +
-				'  <div class="btw-greeting">Good morning, ' + uname + '</div>' +
+				'  <div class="btw-greeting">' + greeting + ', ' + uname + '</div>' +
 				'  <div class="btw-date">' + date + ' · BTW Operations</div>' +
 
 				'  <div class="btw-cards">' +
